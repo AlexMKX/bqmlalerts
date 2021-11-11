@@ -1,11 +1,10 @@
-CREATE EXTERNAL TABLE `analytics.int_alerting_config_kmeans`
+CREATE OR REPLACE EXTERNAL TABLE `analytics.int_alerting_config_kmeans`
 OPTIONS(
   sheet_range="sources_kmeans",
   format="GOOGLE_SHEETS",
   uris=["https://docs.google.com/spreadsheets/d/..........."]
 );
-
-create table analytics.alerting_train_log
+create OR REPLACE table analytics.alerting_train_log
 (
     name         STRING,
     last_trained TIMESTAMP
@@ -51,7 +50,7 @@ FROM analytics.int_alerting_config_kmeans
 where alert is not null);
 
 
-create procedure analytics.alerting_create_models(force_all BOOL)
+create or replace procedure analytics.alerting_create_models(force_all BOOL)
 BEGIN
     DECLARE
         models ARRAY <struct <name string, ddl string>>;
@@ -91,7 +90,7 @@ BEGIN
 END;
 
 
-create procedure analytics.alerting_create_models(force_all BOOL)
+create or replace procedure analytics.alerting_create_models(force_all BOOL)
 BEGIN
     DECLARE
         models ARRAY <struct <name string, ddl string>>;
@@ -130,7 +129,7 @@ BEGIN
         END WHILE;
 END;
 
-create procedure analytics.alerting_retrain_models(force_all BOOL)
+create or replace procedure analytics.alerting_retrain_models(force_all BOOL)
 BEGIN
     DECLARE
         models ARRAY <struct <name string, ddl string>>;
@@ -184,7 +183,7 @@ BEGIN
         END WHILE;
 END;
 
-create procedure analytics.alerting_create_kmeans_views()
+create or replace procedure analytics.alerting_create_kmeans_views()
 BEGIN
     DECLARE
         views ARRAY <string>;
@@ -208,7 +207,7 @@ BEGIN
         END WHILE;
 END;
 
-create procedure analytics.alerting_create_aggregated_view()
+create or replace procedure analytics.alerting_create_aggregated_view()
 begin
     declare uq string;
     declare uqs array <string>;
@@ -225,10 +224,9 @@ begin
     execute immediate CONCAT("CREATE OR REPLACE VIEW analytics.alerting_all as (",uq,")");
 end;
 
-create procedure analytics.alerting_bootstrap()
+create or replace procedure analytics.alerting_bootstrap()
 begin 
 call analytics.alerting_create_models(TRUE);
 call analytics.alerting_create_kmeans_views();
 call analytics.alerting_create_aggregated_view();
 end;
-
